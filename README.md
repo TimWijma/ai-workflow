@@ -70,14 +70,3 @@ This project is a full-stack AI workflow builder that allows users to create, sa
     ```sh
     npm run dev
     ```
-
-## Example Workflow
-
-1.  Open the application in your browser.
-2.  Drag and drop the "Get Data from API" step onto the canvas.
-3.  Select the node and configure the API URL in the sidebar. For example, you can use `https://api.publicapis.org/entries`.
-4.  Drag and drop the "Call LLM" step onto the canvas.
-5.  Select the node and configure the prompt in the sidebar. For example, you can use `Summarize the following data: {data}`.
-6.  Connect the two nodes by dragging from the output of the first node to the input of the second node.
-7.  Click the "Save" button in the header to save your workflow.
-8.  Click the "Run" button to execute the workflow. The result will be displayed in a dialog.
