@@ -2,7 +2,7 @@
 import Toolbar from 'primevue/toolbar';
 import Button from 'primevue/button';
 
-const emit = defineEmits(['save', 'load', 'run']);
+const emit = defineEmits(['new', 'save', 'load', 'run']);
 </script>
 
 <template>
@@ -11,6 +11,7 @@ const emit = defineEmits(['save', 'load', 'run']);
       <h1>AI Workflow Builder</h1>
     </template>
     <template #end>
+        <Button label="New" icon="pi pi-plus" class="mr-2" @click="$emit('new')" />
         <Button label="Save" icon="pi pi-save" class="mr-2" @click="$emit('save')" />
         <Button label="Load" icon="pi pi-folder-open" class="mr-2" @click="$emit('load')" />
         <Button label="Run" icon="pi pi-play" @click="$emit('run')" />
