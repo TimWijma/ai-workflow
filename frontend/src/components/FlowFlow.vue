@@ -28,12 +28,12 @@
       <div v-if="flowStore.selectedStep" class="edit-dialog-content">
         <div class="field">
           <label for="stepType">Step Type</label>
-          <Dropdown
+          <Select
             id="stepType"
             v-model="editForm.type"
             :options="stepTypes"
-            option-label="label"
-            option-value="value"
+            optionLabel="label"
+            optionValue="value"
             class="w-full"
           />
         </div>
@@ -81,7 +81,7 @@ import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
-import Dropdown from 'primevue/dropdown'
+import Select from 'primevue/select'
 import ApiNode from './nodes/ApiNode.vue'
 import LlmNode from './nodes/LlmNode.vue'
 

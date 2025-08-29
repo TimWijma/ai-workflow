@@ -11,11 +11,11 @@
     </div>
 
     <div class="flow-header-center">
-      <Dropdown
+      <Select
         v-model="selectedFlowId"
         :options="flowStore.flows"
-        option-label="name"
-        option-value="id"
+        optionLabel="name"
+        optionValue="id"
         placeholder="Select a Flow"
         class="flow-selector"
         @update:modelValue="onFlowChange"
@@ -32,7 +32,7 @@
 import { ref, watch, computed } from 'vue'
 import { useFlowStore } from '@/stores/useFlowStore'
 import InputText from 'primevue/inputtext'
-import Dropdown from 'primevue/dropdown'
+import Select from 'primevue/select'
 import Button from 'primevue/button'
 
 const flowStore = useFlowStore()
