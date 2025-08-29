@@ -24,48 +24,14 @@
     </VueFlow>
 
     <!-- Node Edit Dialog -->
-    <Dialog v-model:visible="showEditDialog" modal header="Edit Step" :style="{ width: '500px' }">
-      <div v-if="flowStore.selectedStep" class="edit-dialog-content">
-        <div class="field">
-          <label for="stepType">Step Type</label>
-          <Select
-            id="stepType"
-            v-model="editForm.type"
-            :options="stepTypes"
-            optionLabel="label"
-            optionValue="value"
-            class="w-full"
-          />
-        </div>
-
-        <div v-if="editForm.type === 'api_call'" class="field">
-          <label for="apiUrl">API URL</label>
-          <InputText
-            id="apiUrl"
-            v-model="editForm.apiUrl"
-            placeholder="https://api.example.com/endpoint"
-            class="w-full"
-          />
-        </div>
-
-        <div v-if="editForm.type === 'llm_call'" class="field">
-          <label for="prompt">Prompt</label>
-          <Textarea
-            id="prompt"
-            v-model="editForm.prompt"
-            placeholder="Enter your LLM prompt here..."
-            rows="4"
-            class="w-full"
-          />
-        </div>
-      </div>
-
-      <template #footer>
-        <Button label="Delete" severity="danger" @click="removeStep" />
-        <Button label="Cancel" severity="secondary" @click="closeEditDialog" />
-        <Button label="Save" @click="saveEditedStep" />
-      </template>
-    </Dialog>
+    <component
+      :is="currentEditComponent"
+      v-model:visible="showEditDialog"
+      :step="flowStore.selectedStep"
+      @save="saveEditedStep"
+      @cancel="closeEditDialog"
+      @delete="removeStep"
+    />
   </div>
 </template>
 
@@ -77,32 +43,31 @@ import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import { useFlowStore } from '@/stores/useFlowStore'
 import type { Step, StepUpdate, StepConnectionCreate } from '@/types'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
-import Select from 'primevue/select'
 import ApiNode from './nodes/ApiNode.vue'
 import LlmNode from './nodes/LlmNode.vue'
+import ApiNodeEdit from './nodes/ApiNodeEdit.vue'
+import LlmNodeEdit from './nodes/LlmNodeEdit.vue'
 
 const flowStore = useFlowStore()
 
 // Dialog state
 const showEditDialog = ref(false)
-const editForm = ref({
-  type: 'api_call' as 'api_call' | 'llm_call',
-  apiUrl: '',
-  prompt: '',
-})
 
 // Position update debouncing
 let positionUpdateTimer: number | null = null
 const pendingPositionUpdates = new Map<string, { x: number; y: number }>()
 
-const stepTypes = [
-  { label: 'API Call', value: 'api_call' },
-  { label: 'LLM Call', value: 'llm_call' },
-]
+// Component mapping for edit dialogs
+const editComponentMap = {
+  api_call: ApiNodeEdit,
+  llm_call: LlmNodeEdit,
+}
+
+// Computed property to determine which edit component to show
+const currentEditComponent = computed(() => {
+  if (!flowStore.selectedStep) return null
+  return editComponentMap[flowStore.selectedStep.type] || null
+})
 
 // Convert steps to Vue Flow nodes
 const vueFlowNodes = computed(() => {
@@ -200,11 +165,7 @@ const onNodeClick = (event: any) => {
 
 // Dialog methods
 const openEditDialog = (step: Step) => {
-  editForm.value = {
-    type: step.type,
-    apiUrl: step.config?.apiUrl || '',
-    prompt: step.config?.prompt || '',
-  }
+  flowStore.setSelectedStep(step)
   showEditDialog.value = true
 }
 
@@ -213,26 +174,32 @@ const closeEditDialog = () => {
   flowStore.setSelectedStep(null)
 }
 
-const saveEditedStep = async () => {
+const saveEditedStep = async (data: any) => {
   if (!flowStore.selectedStep) return
 
-  const config: any = {}
-  if (editForm.value.type === 'api_call') {
-    config.apiUrl = editForm.value.apiUrl
-  } else if (editForm.value.type === 'llm_call') {
-    config.prompt = editForm.value.prompt
-  }
-
   const updateData: StepUpdate = {
-    type: editForm.value.type,
-    config,
+    type: data.type,
+    config: data.config,
     pos_x: flowStore.selectedStep.pos_x,
     pos_y: flowStore.selectedStep.pos_y,
   }
 
   try {
     await flowStore.updateStep(flowStore.selectedStep.id, updateData)
-    closeEditDialog()
+
+    // If the type changed, we need to close and reopen the dialog with the new component
+    if (data.type !== flowStore.selectedStep.type) {
+      closeEditDialog()
+      // Small delay to allow the component to update
+      setTimeout(() => {
+        const updatedStep = flowStore.steps.find((s) => s.id === flowStore.selectedStep?.id)
+        if (updatedStep) {
+          openEditDialog(updatedStep)
+        }
+      }, 100)
+    } else {
+      closeEditDialog()
+    }
   } catch (error) {
     console.error('Error saving step:', error)
   }
@@ -258,27 +225,6 @@ const removeStep = async () => {
 
 .vue-flow {
   height: 100%;
-  width: 100%;
-}
-
-.edit-dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.field label {
-  font-weight: 600;
-  color: var(--p-text-color);
-}
-
-.w-full {
   width: 100%;
 }
 </style>

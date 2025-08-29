@@ -49,12 +49,15 @@ const localData = ref(props.nodeData.config?.data || {})
 
 // Watch for external changes to the step
 watch(
-  () => props.nodeData.config?.apiUrl,
-  (newUrl) => {
-    if (newUrl !== localApiUrl.value) {
-      localApiUrl.value = newUrl || ''
+  () => props.nodeData.config,
+  (newConfig) => {
+    if (newConfig) {
+      localApiUrl.value = newConfig.apiUrl || ''
+      localMethod.value = newConfig.method || 'GET'
+      localData.value = newConfig.data ? JSON.stringify(newConfig.data, null, 2) : ''
     }
   },
+  { deep: true },
 )
 </script>
 

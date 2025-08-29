@@ -8,6 +8,19 @@
       readonly
       @update:modelValue="onPromptChange"
     />
+    <InputText
+      v-if="localModel"
+      v-model="localModel"
+      placeholder="Model"
+      class="node-input"
+      readonly
+    />
+    <InputText
+      v-if="localTemperature !== null"
+      :model-value="`Temperature: ${localTemperature}`"
+      class="node-input"
+      readonly
+    />
   </BaseNode>
 </template>
 
@@ -15,6 +28,7 @@
 import { ref, watch } from 'vue'
 import { useFlowStore } from '@/stores/useFlowStore'
 import Textarea from 'primevue/textarea'
+import InputText from 'primevue/inputtext'
 import BaseNode from './BaseNode.vue'
 import type { Step } from '@/types'
 
@@ -30,15 +44,20 @@ const props = defineProps<Props>()
 const flowStore = useFlowStore()
 
 const localPrompt = ref(props.nodeData.config?.prompt || '')
+const localModel = ref(props.nodeData.config?.model || '')
+const localTemperature = ref(props.nodeData.config?.temperature || null)
 
 // Watch for external changes to the step
 watch(
-  () => props.nodeData.config?.prompt,
-  (newPrompt) => {
-    if (newPrompt !== localPrompt.value) {
-      localPrompt.value = newPrompt || ''
+  () => props.nodeData.config,
+  (newConfig) => {
+    if (newConfig) {
+      localPrompt.value = newConfig.prompt || ''
+      localModel.value = newConfig.model || ''
+      localTemperature.value = newConfig.temperature || null
     }
   },
+  { deep: true },
 )
 
 const onPromptChange = (newPrompt: string | undefined) => {
