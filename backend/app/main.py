@@ -1,17 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import flows
-from app.db.session import engine
-from app.models import models
 
-models.Base.metadata.create_all(bind=engine)
+from .api.endpoints import flows, steps, connections, llm
 
 app = FastAPI()
 
-# Set up CORS
+# CORS
 origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "http://localhost:8080",
 ]
 
 app.add_middleware(
@@ -22,4 +19,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(flows.router, prefix="/api/v1")
+app.include_router(flows.router, prefix="/flows", tags=["flows"])
+app.include_router(steps.router, tags=["steps"])
+app.include_router(connections.router, tags=["connections"])
+app.include_router(llm.router, tags=["llm"])
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the AI Workflow Backend"}
