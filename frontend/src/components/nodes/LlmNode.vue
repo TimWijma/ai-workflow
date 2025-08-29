@@ -1,28 +1,21 @@
 <template>
-  <div class="llm-node">
-    <div class="node-header">
-      <i class="pi pi-brain"></i>
-      <span>LLM Call</span>
-    </div>
-    <div class="node-content">
-      <Textarea
-        v-model="localPrompt"
-        placeholder="Enter prompt..."
-        rows="3"
-        class="node-textarea"
-        @update:modelValue="onPromptChange"
-      />
-    </div>
-    <Handle type="target" :position="Position.Top" />
-    <Handle type="source" :position="Position.Bottom" />
-  </div>
+  <BaseNode title="LLM Call" icon="pi pi-brain" node-class="llm-node">
+    <Textarea
+      v-model="localPrompt"
+      placeholder="Enter prompt..."
+      rows="3"
+      class="node-input"
+      readonly
+      @update:modelValue="onPromptChange"
+    />
+  </BaseNode>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Handle, Position } from '@vue-flow/core'
 import { useFlowStore } from '@/stores/useFlowStore'
 import Textarea from 'primevue/textarea'
+import BaseNode from './BaseNode.vue'
 import type { Step } from '@/types'
 
 interface Props {
@@ -55,36 +48,8 @@ const onPromptChange = (newPrompt: string | undefined) => {
 </script>
 
 <style scoped>
-.llm-node {
-  border-radius: 8px;
-  padding: 12px;
-  min-width: 200px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: var(--p-text-color);
-  background: var(--p-content-background);
-}
-
-.llm-node:hover {
-  border-color: #8b5cf6;
-}
-
-.node-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.node-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.node-textarea {
-  font-size: 12px;
+/* Additional LLM-specific styling can go here if needed */
+.node-input {
   resize: none;
 }
 </style>

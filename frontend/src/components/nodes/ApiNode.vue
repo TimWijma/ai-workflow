@@ -1,27 +1,20 @@
 <template>
-  <div class="api-node">
-    <div class="node-header">
-      <i class="pi pi-globe"></i>
-      <span>API Call</span>
-    </div>
-    <div class="node-content">
-      <InputText
-        v-model="localApiUrl"
-        placeholder="API URL"
-        class="node-input"
-        @update:modelValue="onUrlChange"
-      />
-    </div>
-    <Handle type="target" :position="Position.Top" />
-    <Handle type="source" :position="Position.Bottom" />
-  </div>
+  <BaseNode title="API Call" icon="pi pi-globe" node-class="api-node">
+    <InputText
+      v-model="localApiUrl"
+      placeholder="API URL"
+      class="node-input"
+      readonly
+      @update:modelValue="onUrlChange"
+    />
+  </BaseNode>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Handle, Position } from '@vue-flow/core'
 import { useFlowStore } from '@/stores/useFlowStore'
 import InputText from 'primevue/inputtext'
+import BaseNode from './BaseNode.vue'
 import type { Step } from '@/types'
 
 interface Props {
@@ -54,31 +47,5 @@ const onUrlChange = (newUrl: string | undefined) => {
 </script>
 
 <style scoped>
-.node {
-  border-radius: 8px;
-  padding: 12px;
-  min-width: 200px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: var(--p-text-color);
-  background: var(--p-content-background);
-  border: 2px solid var(--p-input-border-color);
-}
-
-.node-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.node-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.node-input {
-  font-size: 12px;
-}
+/* Additional API-specific styling can go here if needed */
 </style>
