@@ -21,6 +21,7 @@ export const useFlowStore = defineStore('flow', () => {
   const flows = ref<Flow[]>([])
   const flowId = ref<string | null>(null)
   const flowName = ref<string>('')
+  const flowResult = ref<any>(null)
   const selectedStep = ref<Step | null>(null)
   const dirty = ref<boolean>(false)
   const loading = ref<boolean>(false)
@@ -101,6 +102,24 @@ export const useFlowStore = defineStore('flow', () => {
       error.value = err.message || 'Failed to create flow'
       console.error('Error creating flow:', err)
       return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const runFlow = async (): Promise<void> => {
+    if (!flowId.value) return
+
+    try {
+      loading.value = true
+      error.value = null
+
+      let data = await Fetch.post(`${API_BASE}/flows/${flowId.value}/run`)
+
+      flowResult.value = data
+    } catch (err: any) {
+      error.value = err.message || 'Failed to run flow'
+      console.error('Error running flow:', err)
     } finally {
       loading.value = false
     }
@@ -218,6 +237,7 @@ export const useFlowStore = defineStore('flow', () => {
     flows,
     flowId,
     flowName,
+    flowResult,
     selectedStep,
     dirty,
     loading,
@@ -228,6 +248,7 @@ export const useFlowStore = defineStore('flow', () => {
     loadFlow,
     saveFlow,
     createFlow,
+    runFlow,
     addStep,
     updateStep,
     removeStep,

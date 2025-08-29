@@ -38,6 +38,14 @@
       </AccordionTab>
 
       <AccordionTab header="Flow Info">
+        <Button
+          icon="pi pi-play"
+          label="Run Flow"
+          :loading="flowStore.loading"
+          :disabled="flowStore.dirty"
+          @click="runFlow"
+          class="save-button"
+        />
         <div class="flow-info">
           <div class="info-item">
             <label>Flow ID:</label>
@@ -57,6 +65,10 @@
               :value="flowStore.dirty ? 'Modified' : 'Saved'"
               :severity="flowStore.dirty ? 'warning' : 'success'"
             />
+          </div>
+          <div class="info-result">
+            <label>Result:</label>
+            <span>{{ flowStore.flowResult }}</span>
           </div>
         </div>
       </AccordionTab>
@@ -114,6 +126,12 @@ const startDrag = (event: DragEvent, stepType: 'api_call' | 'llm_call') => {
     )
     event.dataTransfer.effectAllowed = 'move'
   }
+}
+
+const runFlow = async () => {
+  if (!flowStore.flowId) return
+
+  await flowStore.runFlow()
 }
 </script>
 

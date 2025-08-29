@@ -7,6 +7,8 @@ from app.schemas import flow as flow_schema
 from app.crud import crud_flow
 from app.db.session import get_db
 
+from app.engine.execution import execute_flow
+
 router = APIRouter()
 
 @router.get("/", response_model=List[flow_schema.Flow])
@@ -38,3 +40,10 @@ def delete_flow(flow_id: uuid.UUID, db: Session = Depends(get_db)):
     if db_flow is None:
         raise HTTPException(status_code=404, detail="Flow not found")
     return db_flow
+
+@router.post("/{flow_id}/run", response_model=flow_schema.FlowResult)
+def run_flow(flow_id: uuid.UUID, db: Session = Depends(get_db)):
+    db_flow = crud_flow.get_flow(db, flow_id=flow_id)
+    if db_flow is None:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    return execute_flow(db, flow_id=flow_id)

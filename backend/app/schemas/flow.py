@@ -27,3 +27,8 @@ class Flow(FlowInDBBase):
 
 class FlowInDB(FlowInDBBase):
     pass
+
+class FlowResult(BaseModel):
+    id: uuid.UUID
+    status: str
+    output: Optional[dict] = None
