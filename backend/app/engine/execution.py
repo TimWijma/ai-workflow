@@ -1,5 +1,6 @@
+import os
 from fastapi import HTTPException
-from litellm import completion
+from litellm import completion, acompletion
 import uuid
 import httpx
 import asyncio
@@ -36,6 +37,21 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
                 # For now, let's continue and add the error to results
                 error_response = {"error": str(e), "step_id": str(step.id)}
                 results.append(error_response)
+        elif step.type == "llm_call":
+            prompt = step.config.get("prompt")
+            model = step.config.get("model", "ollama/gemma3:270m")
+            temperature = step.config.get("temperature", 0.7)
+
+            try:
+                print(f"Calling LLM: {model} with prompt {prompt} and temperature {temperature}")
+
+                response = await call_llm(prompt, model, temperature)
+                print(f"LLM response for step {step.id}: {response}")
+                results.append(response)
+            except Exception as e:
+                print(f"Error calling LLM for step {step.id}: {str(e)}")
+                error_response = {"error": str(e), "step_id": str(step.id)}
+                results.append(error_response)
 
     result = {
         "id": db_flow.id,
@@ -48,21 +64,21 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
 async def call_api(url: str, method: str = "GET", data: dict = None) -> dict:
     try:
         async with httpx.AsyncClient() as client:
-            print(f"Making {method} request to {url}")
             if method == "POST":
                 response = await client.post(url, json=data)
+            elif method == "PUT":
+                response = await client.put(url, json=data)
+            elif method == "DELETE":
+                response = await client.delete(url)
             else:
                 response = await client.get(url)
 
-            print(f"Response status: {response.status_code}")
-            
             if response.status_code != 200 and response.status_code != 201:
                 error_detail = f"HTTP {response.status_code}: {response.text}"
                 print(f"API call failed: {error_detail}")
                 raise HTTPException(status_code=response.status_code, detail=error_detail)
 
             response_data = response.json()
-            print(f"Response data: {response_data}")
             return response_data
     except httpx.RequestError as e:
         print(f"Request error: {str(e)}")
@@ -72,13 +88,15 @@ async def call_api(url: str, method: str = "GET", data: dict = None) -> dict:
         raise
 
 async def call_llm(prompt: str, model: str, temperature: float) -> dict:
-    response = await completion(
+    response = await acompletion(
         model=model,
         messages=[
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature=temperature,
+        api_base="http://localhost:11434" if model.startswith("ollama") else None
     )
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail=response.text)
 
-    return response.json()
+    print(f"LLM response: {response}")
+
+    return response.choices[0].message.content
