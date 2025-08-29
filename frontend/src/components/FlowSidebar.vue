@@ -120,7 +120,6 @@ const startDrag = (event: DragEvent, stepType: 'api_call' | 'llm_call') => {
 <style scoped>
 .flow-sidebar {
   width: 300px;
-  background: var(--p-surface-0);
   border-left: 1px solid var(--p-surface-border);
   display: flex;
   flex-direction: column;
@@ -165,11 +164,9 @@ const startDrag = (event: DragEvent, stepType: 'api_call' | 'llm_call') => {
   border-radius: 6px;
   cursor: move;
   transition: all 0.2s ease;
-  background: var(--p-surface-50);
 }
 
 .palette-item:hover {
-  background: var(--p-surface-100);
   border-color: var(--p-primary-color);
 }
 

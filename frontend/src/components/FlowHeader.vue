@@ -99,7 +99,6 @@ const showSettings = () => {
   display: flex;
   align-items: center;
   padding: 1rem;
-  background: var(--p-surface-0);
   border-bottom: 1px solid var(--p-surface-border);
   gap: 1rem;
 }

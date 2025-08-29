@@ -56,12 +56,12 @@ const onPromptChange = (newPrompt: string | undefined) => {
 
 <style scoped>
 .llm-node {
-  background: white;
-  border: 2px solid #e2e8f0;
   border-radius: 8px;
   padding: 12px;
-  min-width: 250px;
+  min-width: 200px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--p-text-color);
+  background: var(--p-content-background);
 }
 
 .llm-node:hover {

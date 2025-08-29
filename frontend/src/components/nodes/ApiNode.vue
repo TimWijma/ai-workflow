@@ -54,17 +54,14 @@ const onUrlChange = (newUrl: string | undefined) => {
 </script>
 
 <style scoped>
-.api-node {
-  background: white;
-  border: 2px solid #e2e8f0;
+.node {
   border-radius: 8px;
   padding: 12px;
   min-width: 200px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.api-node:hover {
-  border-color: #3b82f6;
+  color: var(--p-text-color);
+  background: var(--p-content-background);
+  border: 2px solid var(--p-input-border-color);
 }
 
 .node-header {
@@ -73,7 +70,6 @@ const onUrlChange = (newUrl: string | undefined) => {
   gap: 8px;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #374151;
 }
 
 .node-content {

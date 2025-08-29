@@ -254,7 +254,6 @@ const removeStep = async () => {
 .flow-container {
   flex: 1;
   position: relative;
-  background: var(--p-surface-50);
 }
 
 .vue-flow {

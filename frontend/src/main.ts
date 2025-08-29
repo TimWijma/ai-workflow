@@ -16,13 +16,6 @@ app.use(pinia)
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
-    options: {
-      darkModeSelector: '.dark-theme',
-      cssLayer: {
-        name: 'primevue',
-        order: 'primevue'
-      }
-    }
   },
 })
 
