@@ -45,7 +45,9 @@ const flowStore = useFlowStore()
 
 const localApiUrl = ref(props.nodeData.config?.apiUrl || '')
 const localMethod = ref(props.nodeData.config?.method || 'GET')
-const localData = ref(props.nodeData.config?.data || {})
+const localData = ref(
+  props.nodeData.config?.data ? JSON.stringify(props.nodeData.config.data, null, 2) : '',
+)
 
 // Watch for external changes to the step
 watch(

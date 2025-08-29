@@ -42,8 +42,8 @@ def delete_flow(flow_id: uuid.UUID, db: Session = Depends(get_db)):
     return db_flow
 
 @router.post("/{flow_id}/run", response_model=flow_schema.FlowResult)
-def run_flow(flow_id: uuid.UUID, db: Session = Depends(get_db)):
+async def run_flow(flow_id: uuid.UUID, db: Session = Depends(get_db)):
     db_flow = crud_flow.get_flow(db, flow_id=flow_id)
     if db_flow is None:
         raise HTTPException(status_code=404, detail="Flow not found")
-    return execute_flow(db, flow_id=flow_id)
+    return await execute_flow(db, flow_id=flow_id)

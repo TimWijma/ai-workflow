@@ -6,3 +6,4 @@ litellm
 alembic
 python-dotenv
 pydantic
+httpx
