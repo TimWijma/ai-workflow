@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, func, ForeignKey, Float, Boolean
+from sqlalchemy import Column, String, DateTime, func, ForeignKey, Float, Boolean, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from ..db.base import Base
@@ -14,6 +14,8 @@ class Step(Base):
     pos_x = Column(Float, default=0.0)
     pos_y = Column(Float, default=0.0)
     is_start = Column(Boolean, default=False)
+    variables = Column(ARRAY(String), nullable=True)
+    
     created_at = Column(DateTime, default=func.now())
 
     flow = relationship("Flow", back_populates="steps")

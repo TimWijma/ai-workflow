@@ -6,6 +6,13 @@
     :style="{ width: '500px' }"
     @update:visible="$emit('update:visible', $event)"
   >
+    <template #header>
+      <div class="edit-header">
+        <span class="edit-title">{{ title }}</span>
+        <span class="edit-id">{{ step?.id }}</span>
+      </div>
+    </template>
+
     <div class="edit-dialog-content">
       <slot />
     </div>
@@ -44,5 +51,17 @@ defineEmits<{
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.edit-header {
+  display: flex;
+  flex-direction: column;
+  font-weight: var(--p-dialog-title-font-weight);
+  font-size: var(--p-dialog-title-font-size);
+}
+
+.edit-id {
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 </style>

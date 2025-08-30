@@ -182,24 +182,13 @@ const saveEditedStep = async (data: any) => {
     pos_x: flowStore.selectedStep.pos_x,
     pos_y: flowStore.selectedStep.pos_y,
     is_start: data.is_start,
+    variables: data.variables,
   }
 
   try {
     await flowStore.updateStep(flowStore.selectedStep.id, updateData)
 
-    // If the type changed, we need to close and reopen the dialog with the new component
-    if (data.type !== flowStore.selectedStep.type) {
-      closeEditDialog()
-      // Small delay to allow the component to update
-      setTimeout(() => {
-        const updatedStep = flowStore.steps.find((s) => s.id === flowStore.selectedStep?.id)
-        if (updatedStep) {
-          openEditDialog(updatedStep)
-        }
-      }, 100)
-    } else {
-      closeEditDialog()
-    }
+    closeEditDialog()
   } catch (error) {
     console.error('Error saving step:', error)
   }

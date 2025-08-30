@@ -137,6 +137,7 @@ const handleSave = () => {
     type: editForm.value.type,
     config,
     is_start: editForm.value.is_start,
+    variables: editForm.value.variables,
   })
 }
 
