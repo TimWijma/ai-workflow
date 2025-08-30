@@ -68,7 +68,7 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
 
             for (step_id, field), value in mappings_to_replace.items():
                 prompt = prompt.replace(f"{{{{{step_id}.{field}}}}}", value)
-                
+
             try:
                 print(f"Calling LLM: {model} \n Prompt: {prompt} \n Temperature: {temperature}")
 

@@ -13,3 +13,4 @@ class Flow(Base):
     created_at = Column(DateTime, default=func.now())
 
     steps = relationship("Step", back_populates="flow", cascade="all, delete-orphan")
+    runs = relationship("FlowRun", back_populates="flow", cascade="all, delete-orphan")
