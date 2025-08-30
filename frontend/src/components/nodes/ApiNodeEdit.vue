@@ -33,6 +33,10 @@
         class="w-full"
       />
     </div>
+    <div class="field">
+      <label for="isStart">Is Start Step</label>
+      <ToggleSwitch v-model="editForm.is_start" />
+    </div>
   </BaseNodeEdit>
 </template>
 
@@ -42,6 +46,7 @@ import BaseNodeEdit from './BaseNodeEdit.vue'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
+import { ToggleSwitch } from 'primevue'
 import type { Step } from '@/types'
 import { StepType, type ApiNodeConfig } from '@/types/Step'
 
@@ -64,6 +69,7 @@ const editForm = ref({
   apiUrl: '',
   method: 'GET',
   data: '',
+  is_start: false,
 })
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE']
@@ -79,6 +85,7 @@ watch(
         apiUrl: config.apiUrl || '',
         method: config.method || 'GET',
         data: config.data ? JSON.stringify(config.data, null, 2) : '',
+        is_start: newStep.is_start || false,
       }
     }
   },

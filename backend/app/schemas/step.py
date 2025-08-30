@@ -10,6 +10,7 @@ class StepBase(BaseModel):
     config: Optional[Dict[str, Any]] = None
     pos_x: float = 0.0
     pos_y: float = 0.0
+    is_start: bool = False
 
 class StepCreate(StepBase):
     flow_id: uuid.UUID

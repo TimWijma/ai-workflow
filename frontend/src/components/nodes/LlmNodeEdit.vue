@@ -41,6 +41,11 @@
         class="w-full"
       />
     </div>
+
+    <div class="field">
+      <label for="isStart">Is Start Step</label>
+      <ToggleSwitch v-model="editForm.is_start" />
+    </div>
   </BaseNodeEdit>
 </template>
 
@@ -50,6 +55,7 @@ import BaseNodeEdit from './BaseNodeEdit.vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
+import ToggleSwitch from 'primevue/toggleswitch'
 import type { Step } from '@/types'
 import { StepType, type LlmNodeConfig } from '@/types/Step'
 
@@ -72,6 +78,7 @@ const editForm = ref({
   prompt: '',
   model: '',
   temperature: null as number | null,
+  is_start: false,
 })
 
 // Watch for step changes to update form
@@ -85,6 +92,7 @@ watch(
         prompt: config.prompt || '',
         model: config.model || '',
         temperature: config.temperature || null,
+        is_start: newStep.is_start || false,
       }
     }
   },

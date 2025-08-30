@@ -12,6 +12,7 @@ export interface Step {
   config: StepConfig | null
   pos_x: number
   pos_y: number
+  is_start: boolean
   created_at: string
   source_connections: StepConnection[]
   target_connections: StepConnection[]
@@ -23,6 +24,7 @@ export interface StepCreate {
   config?: StepConfig | null
   pos_x?: number
   pos_y?: number
+  is_start?: boolean
 }
 
 export interface StepUpdate {
@@ -30,6 +32,7 @@ export interface StepUpdate {
   config?: StepConfig | null
   pos_x?: number
   pos_y?: number
+  is_start?: boolean
 }
 
 export type StepConfig = ApiNodeConfig | LlmNodeConfig

@@ -118,6 +118,7 @@ const onNodesChange = (changes: any[]) => {
               config: step.config,
               pos_x: position.x,
               pos_y: position.y,
+              is_start: step.is_start,
             }
             try {
               await flowStore.updateStep(stepId, updateData)
@@ -180,6 +181,7 @@ const saveEditedStep = async (data: any) => {
     config: data.config,
     pos_x: flowStore.selectedStep.pos_x,
     pos_y: flowStore.selectedStep.pos_y,
+    is_start: flowStore.selectedStep.is_start,
   }
 
   try {
