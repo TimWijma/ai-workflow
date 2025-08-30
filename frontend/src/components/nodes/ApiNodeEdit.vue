@@ -37,6 +37,23 @@
       <label for="isStart">Is Start Step</label>
       <ToggleSwitch v-model="editForm.is_start" />
     </div>
+
+    <div class="field">
+      <label for="variables">Variables</label>
+      <div class="variable-input">
+        <InputText type="text" v-model="tempVariable" />
+        <Button icon="pi pi-plus" @click="addVariable">Add</Button>
+      </div>
+      <div class="variable-chips">
+        <Chip
+          v-for="name in editForm.variables"
+          :key="name"
+          :label="name"
+          removable
+          @remove="removeVariable(name)"
+        />
+      </div>
+    </div>
   </BaseNodeEdit>
 </template>
 
@@ -46,6 +63,8 @@ import BaseNodeEdit from './BaseNodeEdit.vue'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
+import Chip from 'primevue/chip'
+import Button from 'primevue/button'
 import { ToggleSwitch } from 'primevue'
 import type { Step } from '@/types'
 import { StepType, type ApiNodeConfig } from '@/types/Step'
@@ -70,11 +89,13 @@ const editForm = ref({
   method: 'GET',
   data: '',
   is_start: false,
+  variables: [] as string[],
 })
+
+const tempVariable = ref('')
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE']
 
-// Watch for step changes to update form
 watch(
   () => props.step,
   (newStep) => {
@@ -86,6 +107,7 @@ watch(
         method: config.method || 'GET',
         data: config.data ? JSON.stringify(config.data, null, 2) : '',
         is_start: newStep.is_start || false,
+        variables: newStep.variables || [],
       }
     }
   },
@@ -114,7 +136,27 @@ const handleSave = () => {
   emit('save', {
     type: editForm.value.type,
     config,
+    is_start: editForm.value.is_start,
   })
+}
+
+const addVariable = () => {
+  if (!tempVariable.value) return
+  if (editForm.value.variables.includes(tempVariable.value)) {
+    tempVariable.value = ''
+    return
+  }
+
+  editForm.value.variables.push(tempVariable.value)
+  tempVariable.value = ''
+}
+
+const removeVariable = (name: string) => {
+  console.log('Removing variable:', name)
+
+  if (editForm.value.variables) {
+    editForm.value.variables = editForm.value.variables.filter((varName) => varName !== name)
+  }
 }
 </script>
 

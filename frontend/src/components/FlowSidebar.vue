@@ -96,6 +96,7 @@ import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import Message from 'primevue/message'
 import { StepType } from '@/types/Step'
+import { computed } from 'vue'
 
 const flowStore = useFlowStore()
 

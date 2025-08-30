@@ -5,7 +5,7 @@
       placeholder="Enter prompt..."
       rows="3"
       class="node-input"
-      readonly
+      disabled
       @update:modelValue="onPromptChange"
     />
     <InputText
@@ -13,13 +13,13 @@
       v-model="localModel"
       placeholder="Model"
       class="node-input"
-      readonly
+      disabled
     />
     <InputText
       v-if="localTemperature !== null"
       :model-value="`Temperature: ${localTemperature}`"
       class="node-input"
-      readonly
+      disabled
     />
   </BaseNode>
 </template>

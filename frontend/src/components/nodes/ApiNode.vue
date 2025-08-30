@@ -1,6 +1,6 @@
 <template>
   <BaseNode title="API Call" icon="pi pi-globe" node-class="api-node">
-    <InputText v-model="localApiUrl" placeholder="API URL" class="node-input" readonly disabled />
+    <InputText v-model="localApiUrl" placeholder="API URL" class="node-input" disabled />
     <Select
       v-model="localMethod"
       :options="['GET', 'POST', 'PUT', 'DELETE']"
@@ -8,13 +8,7 @@
       class="node-select"
       disabled
     />
-    <InputText
-      v-model="localData"
-      placeholder="Request Body (JSON)"
-      class="node-input"
-      readonly
-      disabled
-    />
+    <InputText v-model="localData" placeholder="Request Body (JSON)" class="node-input" disabled />
   </BaseNode>
 </template>
 
