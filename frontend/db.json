@@ -1,9 +1,9 @@
 {
   "posts": [
     {
-      "id": "1",
-      "title": "a title",
-      "views": 100
+      "title": "a cut dog",
+      "description": "a cute dog goes on an adventure to the netherlands",
+      "id": "1"
     },
     {
       "id": "2",

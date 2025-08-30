@@ -1,4 +1,5 @@
 import os
+from typing import Dict
 from fastapi import HTTPException
 from litellm import completion, acompletion
 import uuid
@@ -22,7 +23,11 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
 
     current_step = crud_step.get_step(db, start_step_id)
 
+    step_variable_outputs: Dict[str, Dict[str, str]] = {}
+
     while current_step:
+        step_variable_outputs[str(current_step.id)] = {}
+
         if current_step.type == "api_call":
             api_url = current_step.config.get("apiUrl")
             method = current_step.config.get("method", "GET")
@@ -37,6 +42,11 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
                 response = await call_api(api_url, method, data)
                 print(f"API response for step {current_step.id}: {response}")
                 results.append(response)
+
+                for variable in current_step.variables:
+                    if variable in response:
+                        step_variable_outputs[str(current_step.id)][variable] = response[variable]
+
             except Exception as e:
                 print(f"Error calling API for step {current_step.id}: {str(e)}")
                 # For now it keeps going, once data passing is implemented, should stop on error
@@ -47,8 +57,19 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
             model = current_step.config.get("model", "ollama/gemma3:270m")
             temperature = current_step.config.get("temperature", 0.7)
 
+            mappings_to_replace: Dict[tuple[str, str], str] = {}
+            for mapping in current_step.mappings:
+                source_node = mapping.get("source_node")
+                field = mapping.get("field")
+
+                if source_node in step_variable_outputs:
+                    if field in step_variable_outputs[source_node]:
+                        mappings_to_replace[(source_node, field)] = step_variable_outputs[source_node][field]
+
+            for (step_id, field), value in mappings_to_replace.items():
+                prompt = prompt.replace(f"{{{{{step_id}.{field}}}}}", value)
             try:
-                print(f"Calling LLM: {model} with prompt {prompt} and temperature {temperature}")
+                print(f"Calling LLM: {model} \n Prompt: {prompt} \n Temperature: {temperature}")
 
                 response = await call_llm(prompt, model, temperature)
                 print(f"LLM response for step {current_step.id}: {response}")

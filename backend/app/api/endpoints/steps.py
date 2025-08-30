@@ -59,7 +59,7 @@ def parse_mapping_str(input: str) -> Optional[Dict[str, str]]:
     matches = MAPPING_PATTERN.findall(input)
     return [
         {
-            "sourceNode": node_id,
+            "source_node": node_id,
             "field": field,
         }
         for node_id, field in matches
