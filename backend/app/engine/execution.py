@@ -4,11 +4,11 @@ from fastapi import HTTPException
 from litellm import completion, acompletion
 import uuid
 import httpx
-import asyncio
 from sqlalchemy.orm import Session
 
 from app.schemas import flow as flow_schema
 from app.crud import crud_flow, crud_step
+from app.helpers.variable_helper import VariableHelper
 
 async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResult:
     db_flow = crud_flow.get_flow(db, flow_id=flow_id)
@@ -23,11 +23,9 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
 
     current_step = crud_step.get_step(db, start_step_id)
 
-    step_variable_outputs: Dict[str, Dict[str, str]] = {}
+    variable_helper = VariableHelper()
 
     while current_step:
-        step_variable_outputs[str(current_step.id)] = {}
-
         if current_step.type == "api_call":
             api_url = current_step.config.get("apiUrl")
             method = current_step.config.get("method", "GET")
@@ -43,10 +41,7 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
                 print(f"API response for step {current_step.id}: {response}")
                 results.append(response)
 
-                for variable in current_step.variables:
-                    if variable in response:
-                        step_variable_outputs[str(current_step.id)][variable] = response[variable]
-
+                variable_helper.update_output_variables(current_step.id, current_step.variables, response)
             except Exception as e:
                 print(f"Error calling API for step {current_step.id}: {str(e)}")
                 # For now it keeps going, once data passing is implemented, should stop on error
@@ -57,17 +52,9 @@ async def execute_flow(db: Session, flow_id: uuid.UUID) -> flow_schema.FlowResul
             model = current_step.config.get("model", "ollama/gemma3:270m")
             temperature = current_step.config.get("temperature", 0.7)
 
-            mappings_to_replace: Dict[tuple[str, str], str] = {}
-            for mapping in current_step.mappings:
-                source_node = mapping.get("source_node")
-                field = mapping.get("field")
+            variable_helper.update_input_variables(current_step.id, current_step.mappings)
 
-                if source_node in step_variable_outputs:
-                    if field in step_variable_outputs[source_node]:
-                        mappings_to_replace[(source_node, field)] = step_variable_outputs[source_node][field]
-
-            for (step_id, field), value in mappings_to_replace.items():
-                prompt = prompt.replace(f"{{{{{step_id}.{field}}}}}", value)
+            prompt = variable_helper.replace_input_variables(current_step.id, prompt)
 
             try:
                 print(f"Calling LLM: {model} \n Prompt: {prompt} \n Temperature: {temperature}")

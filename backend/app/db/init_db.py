@@ -1,6 +1,6 @@
 from .base import Base
 from .session import engine
-from ..models import flow, step, step_connection, flow_run, step_run
+from ..models import flow_run, flow, step_run, step, step_connection 
 
 def init_db():
     try:

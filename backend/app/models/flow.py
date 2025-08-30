@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from ..db.base import Base
 
+from . import flow_run
+
 class Flow(Base):
     __tablename__ = "flows"
 
