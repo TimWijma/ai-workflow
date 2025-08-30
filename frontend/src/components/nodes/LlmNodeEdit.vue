@@ -4,7 +4,7 @@
     title="Edit LLM Call"
     :step="step"
     @update:visible="$emit('update:visible', $event)"
-    @save="handleSave"
+    @save="handleBaseSave"
     @cancel="$emit('cancel')"
     @delete="$emit('delete')"
   >
@@ -41,11 +41,6 @@
         class="w-full"
       />
     </div>
-
-    <div class="field">
-      <label for="isStart">Is Start Step</label>
-      <ToggleSwitch v-model="editForm.is_start" />
-    </div>
   </BaseNodeEdit>
 </template>
 
@@ -55,7 +50,6 @@ import BaseNodeEdit from './BaseNodeEdit.vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import ToggleSwitch from 'primevue/toggleswitch'
 import type { Step } from '@/types'
 import { StepType, type LlmNodeConfig } from '@/types/Step'
 
@@ -78,15 +72,12 @@ const editForm = ref({
   prompt: '',
   model: '',
   temperature: null as number | null,
-  is_start: false,
 })
 
 // Watch for step changes to update form
 watch(
   () => props.step,
   (newStep) => {
-    console.log(newStep)
-
     if (newStep) {
       const config = newStep.config as LlmNodeConfig
       editForm.value = {
@@ -94,14 +85,13 @@ watch(
         prompt: config.prompt || '',
         model: config.model || '',
         temperature: config.temperature || null,
-        is_start: newStep.is_start || false,
       }
     }
   },
   { immediate: true },
 )
 
-const handleSave = () => {
+const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
   const config: any = {
     prompt: editForm.value.prompt,
   }
@@ -118,23 +108,13 @@ const handleSave = () => {
   emit('save', {
     type: editForm.value.type,
     config,
-    is_start: editForm.value.is_start,
+    is_start: commonData.is_start,
+    variables: commonData.variables,
   })
 }
 </script>
 
 <style scoped>
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.field label {
-  font-weight: 600;
-  color: var(--p-text-color);
-}
-
 .w-full {
   width: 100%;
 }
