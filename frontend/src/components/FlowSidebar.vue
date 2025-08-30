@@ -18,8 +18,8 @@
           <div
             class="palette-item api-item"
             draggable="true"
-            @dragstart="startDrag($event, 'api_call')"
-            @click="addStep('api_call')"
+            @dragstart="startDrag($event, StepType.API_CALL)"
+            @click="addStep(StepType.API_CALL)"
           >
             <i class="pi pi-globe"></i>
             <span>API Call</span>
@@ -28,8 +28,8 @@
           <div
             class="palette-item llm-item"
             draggable="true"
-            @dragstart="startDrag($event, 'llm_call')"
-            @click="addStep('llm_call')"
+            @dragstart="startDrag($event, StepType.LLM_CALL)"
+            @click="addStep(StepType.LLM_CALL)"
           >
             <i class="pi pi-brain"></i>
             <span>LLM Call</span>
@@ -95,6 +95,7 @@ import AccordionTab from 'primevue/accordiontab'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import Message from 'primevue/message'
+import { StepType } from '@/types/Step'
 
 const flowStore = useFlowStore()
 
@@ -102,7 +103,7 @@ const saveFlow = async () => {
   await flowStore.saveFlow()
 }
 
-const addStep = async (type: 'api_call' | 'llm_call') => {
+const addStep = async (type: StepType) => {
   if (!flowStore.flowId) return
 
   const stepData: StepCreate = {
@@ -110,13 +111,13 @@ const addStep = async (type: 'api_call' | 'llm_call') => {
     type,
     pos_x: Math.random() * 400 + 100, // Random position
     pos_y: Math.random() * 300 + 100,
-    config: type === 'api_call' ? { apiUrl: '' } : { prompt: '' },
+    config: type === StepType.API_CALL ? { apiUrl: '' } : { prompt: '' },
   }
 
   await flowStore.addStep(stepData)
 }
 
-const startDrag = (event: DragEvent, stepType: 'api_call' | 'llm_call') => {
+const startDrag = (event: DragEvent, stepType: StepType) => {
   if (event.dataTransfer) {
     event.dataTransfer.setData(
       'application/vueflow',

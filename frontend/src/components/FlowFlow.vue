@@ -12,7 +12,6 @@
     >
       <Background />
       <Controls />
-      <MiniMap />
 
       <template #node-api_call="{ data, id }">
         <ApiNode :node-data="data" :node-id="id" />
@@ -40,7 +39,6 @@ import { ref, computed, watch } from 'vue'
 import { VueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
-import { MiniMap } from '@vue-flow/minimap'
 import { useFlowStore } from '@/stores/useFlowStore'
 import type { Step, StepUpdate, StepConnectionCreate } from '@/types'
 import ApiNode from './nodes/ApiNode.vue'

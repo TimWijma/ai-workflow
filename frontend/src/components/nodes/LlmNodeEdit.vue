@@ -50,8 +50,8 @@ import BaseNodeEdit from './BaseNodeEdit.vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import Select from 'primevue/select'
 import type { Step } from '@/types'
+import { StepType, type LlmNodeConfig } from '@/types/Step'
 
 interface Props {
   visible: boolean
@@ -68,27 +68,23 @@ const emit = defineEmits<{
 }>()
 
 const editForm = ref({
-  type: 'llm_call' as 'api_call' | 'llm_call',
+  type: StepType.LLM_CALL,
   prompt: '',
   model: '',
   temperature: null as number | null,
 })
-
-const stepTypes = [
-  { label: 'API Call', value: 'api_call' },
-  { label: 'LLM Call', value: 'llm_call' },
-]
 
 // Watch for step changes to update form
 watch(
   () => props.step,
   (newStep) => {
     if (newStep) {
+      const config = newStep.config as LlmNodeConfig
       editForm.value = {
         type: newStep.type,
-        prompt: newStep.config?.prompt || '',
-        model: newStep.config?.model || '',
-        temperature: newStep.config?.temperature || null,
+        prompt: config.prompt || '',
+        model: config.model || '',
+        temperature: config.temperature || null,
       }
     }
   },

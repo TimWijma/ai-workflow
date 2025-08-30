@@ -20,14 +20,7 @@
 
     <div class="field">
       <label for="method">HTTP Method</label>
-      <Select
-        id="method"
-        v-model="editForm.method"
-        :options="httpMethods"
-        optionLabel="label"
-        optionValue="value"
-        class="w-full"
-      />
+      <Select id="method" v-model="editForm.method" :options="httpMethods" class="w-full" />
     </div>
 
     <div class="field">
@@ -50,6 +43,7 @@ import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
 import type { Step } from '@/types'
+import { StepType, type ApiNodeConfig } from '@/types/Step'
 
 interface Props {
   visible: boolean
@@ -66,34 +60,25 @@ const emit = defineEmits<{
 }>()
 
 const editForm = ref({
-  type: 'api_call' as 'api_call' | 'llm_call',
+  type: StepType.API_CALL,
   apiUrl: '',
   method: 'GET',
   data: '',
 })
 
-const stepTypes = [
-  { label: 'API Call', value: 'api_call' },
-  { label: 'LLM Call', value: 'llm_call' },
-]
-
-const httpMethods = [
-  { label: 'GET', value: 'GET' },
-  { label: 'POST', value: 'POST' },
-  { label: 'PUT', value: 'PUT' },
-  { label: 'DELETE', value: 'DELETE' },
-]
+const httpMethods = ['GET', 'POST', 'PUT', 'DELETE']
 
 // Watch for step changes to update form
 watch(
   () => props.step,
   (newStep) => {
     if (newStep) {
+      const config = newStep.config as ApiNodeConfig
       editForm.value = {
         type: newStep.type,
-        apiUrl: newStep.config?.apiUrl || '',
-        method: newStep.config?.method || 'GET',
-        data: newStep.config?.data ? JSON.stringify(newStep.config.data, null, 2) : '',
+        apiUrl: config.apiUrl || '',
+        method: config.method || 'GET',
+        data: config.data ? JSON.stringify(config.data, null, 2) : '',
       }
     }
   },

@@ -25,12 +25,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import BaseNode from './BaseNode.vue'
 import type { Step } from '@/types'
-
-interface ApiNodeConfig {
-  apiUrl?: string
-  method?: string
-  data?: any
-}
+import type { ApiNodeConfig } from '@/types/Step'
 
 interface Props {
   nodeData: {
