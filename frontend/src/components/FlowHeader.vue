@@ -76,8 +76,16 @@ const onFlowNameChange = (newName: string | undefined) => {
   }
 
   debounceTimer = setTimeout(async () => {
-    if (newName.trim() && flowStore.flowId) {
+    if (!newName.trim()) return
+
+    if (flowStore.flowId) {
       await flowStore.saveFlow()
+    } else {
+      await flowStore.createFlow({
+        name: newName,
+      })
+      selectedFlowId.value = flowStore.flowId
+      localFlowName.value = newName
     }
   }, 1000) // 1 second debounce
 }

@@ -147,6 +147,8 @@ export const useFlowStore = defineStore('flow', () => {
     try {
       loading.value = true
       error.value = null
+      console.log(stepUpdate)
+
       const data = await Fetch.put<Step>(`${API_BASE}/steps/${stepId}`, stepUpdate)
 
       const index = steps.value.findIndex((s) => s.id === stepId)

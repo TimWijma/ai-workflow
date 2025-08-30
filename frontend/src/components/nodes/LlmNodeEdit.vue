@@ -85,6 +85,8 @@ const editForm = ref({
 watch(
   () => props.step,
   (newStep) => {
+    console.log(newStep)
+
     if (newStep) {
       const config = newStep.config as LlmNodeConfig
       editForm.value = {
@@ -116,6 +118,7 @@ const handleSave = () => {
   emit('save', {
     type: editForm.value.type,
     config,
+    is_start: editForm.value.is_start,
   })
 }
 </script>

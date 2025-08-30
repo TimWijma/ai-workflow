@@ -181,7 +181,7 @@ const saveEditedStep = async (data: any) => {
     config: data.config,
     pos_x: flowStore.selectedStep.pos_x,
     pos_y: flowStore.selectedStep.pos_y,
-    is_start: flowStore.selectedStep.is_start,
+    is_start: data.is_start,
   }
 
   try {
