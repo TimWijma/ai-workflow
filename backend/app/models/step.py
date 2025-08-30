@@ -15,7 +15,8 @@ class Step(Base):
     pos_y = Column(Float, default=0.0)
     is_start = Column(Boolean, default=False)
     variables = Column(ARRAY(String), nullable=True)
-    
+    mappings = Column(JSONB, nullable=True)
+
     created_at = Column(DateTime, default=func.now())
 
     flow = relationship("Flow", back_populates="steps")

@@ -12,6 +12,7 @@ class StepBase(BaseModel):
     pos_y: float = 0.0
     is_start: bool = False
     variables: Optional[list[str]] = None
+    mappings: Optional[list[Dict[str, str]]] = None
 
 class StepCreate(StepBase):
     flow_id: uuid.UUID

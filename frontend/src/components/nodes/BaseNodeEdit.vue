@@ -9,7 +9,17 @@
     <template #header>
       <div class="edit-header">
         <span class="edit-title">{{ title }}</span>
-        <span class="edit-id">{{ step?.id }}</span>
+        <div>
+          <span class="edit-id">{{ step?.id }}</span>
+          <Button
+            icon="pi pi-copy"
+            size="small"
+            variant="text"
+            rounded
+            aria-label="Filter"
+            @click="copyStepId"
+          />
+        </div>
       </div>
     </template>
 
@@ -36,7 +46,7 @@ interface Props {
   step: Step | null
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 defineEmits<{
   'update:visible': [value: boolean]
@@ -44,6 +54,12 @@ defineEmits<{
   cancel: []
   delete: []
 }>()
+
+const copyStepId = () => {
+  if (props.step) {
+    navigator.clipboard.writeText(props.step.id)
+  }
+}
 </script>
 
 <style scoped>
