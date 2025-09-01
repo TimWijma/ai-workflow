@@ -1,57 +1,119 @@
 <template>
-  <BaseNode title="API Call" icon="pi pi-globe" node-class="api-node">
-    <InputText v-model="localApiUrl" placeholder="API URL" class="node-input" disabled />
-    <Select
-      v-model="localMethod"
-      :options="['GET', 'POST', 'PUT', 'DELETE']"
-      placeholder="HTTP Method"
-      class="node-select"
-      disabled
-    />
-    <InputText v-model="localData" placeholder="Request Body (JSON)" class="node-input" disabled />
-  </BaseNode>
+  <BaseNodeEdit
+    :visible="visible"
+    title="Edit API Call"
+    :step="step"
+    @update:visible="$emit('update:visible', $event)"
+    @save="handleBaseSave"
+    @cancel="$emit('cancel')"
+    @delete="$emit('delete')"
+  >
+    <div class="field">
+      <label for="apiUrl">API URL</label>
+      <InputText
+        id="apiUrl"
+        v-model="editForm.apiUrl"
+        placeholder="https://api.example.com/endpoint"
+        class="w-full"
+      />
+    </div>
+
+    <div class="field">
+      <label for="method">HTTP Method</label>
+      <Select id="method" v-model="editForm.method" :options="httpMethods" class="w-full" />
+    </div>
+
+    <div class="field">
+      <label for="requestBody">Request Body (JSON)</label>
+      <Textarea
+        id="requestBody"
+        v-model="editForm.data"
+        placeholder='{"key": "value"}'
+        rows="4"
+        class="w-full"
+      />
+    </div>
+  </BaseNodeEdit>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useFlowStore } from '@/stores/useFlowStore'
+import BaseNodeEdit from './BaseNode.vue'
 import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
-import BaseNode from './BaseNode.vue'
 import type { Step } from '@/types'
-import type { ApiNodeConfig } from '@/types/Step'
+import { StepType, type ApiNodeConfig } from '@/types/Step'
 
 interface Props {
-  nodeData: {
-    step: Step
-    config: ApiNodeConfig
-  }
-  nodeId: string
+  visible: boolean
+  step: Step | null
 }
 
 const props = defineProps<Props>()
-const flowStore = useFlowStore()
 
-const localApiUrl = ref(props.nodeData.config?.apiUrl || '')
-const localMethod = ref(props.nodeData.config?.method || 'GET')
-const localData = ref(
-  props.nodeData.config?.data ? JSON.stringify(props.nodeData.config.data, null, 2) : '',
-)
+const emit = defineEmits<{
+  'update:visible': [value: boolean]
+  save: [data: any]
+  cancel: []
+  delete: []
+}>()
 
-// Watch for external changes to the step
+const editForm = ref({
+  type: StepType.API_CALL,
+  apiUrl: '',
+  method: 'GET',
+  data: '',
+})
+
+const httpMethods = ['GET', 'POST', 'PUT', 'DELETE']
+
 watch(
-  () => props.nodeData.config,
-  (newConfig) => {
-    if (newConfig) {
-      localApiUrl.value = newConfig.apiUrl || ''
-      localMethod.value = newConfig.method || 'GET'
-      localData.value = newConfig.data ? JSON.stringify(newConfig.data, null, 2) : ''
+  () => props.step,
+  (newStep) => {
+    if (newStep) {
+      const config = newStep.config as ApiNodeConfig
+      editForm.value = {
+        type: newStep.type,
+        apiUrl: config.apiUrl || '',
+        method: config.method || 'GET',
+        data: config.data ? JSON.stringify(config.data, null, 2) : '',
+      }
     }
   },
-  { deep: true },
+  { immediate: true },
 )
+
+const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
+  let parsedData = null
+
+  // Try to parse JSON data if provided
+  if (editForm.value.data.trim()) {
+    try {
+      parsedData = JSON.parse(editForm.value.data)
+    } catch (error) {
+      alert('Invalid JSON in Request Body')
+      return
+    }
+  }
+
+  const config = {
+    apiUrl: editForm.value.apiUrl,
+    method: editForm.value.method,
+    data: parsedData,
+  }
+
+  emit('save', {
+    type: editForm.value.type,
+    config,
+    is_start: commonData.is_start,
+    variables: commonData.variables,
+  })
+}
 </script>
 
 <style scoped>
-/* Additional API-specific styling can go here if needed */
+.w-full {
+  width: 100%;
+}
 </style>

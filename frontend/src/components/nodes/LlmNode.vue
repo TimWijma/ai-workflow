@@ -1,74 +1,121 @@
 <template>
-  <BaseNode title="LLM Call" icon="pi pi-brain" node-class="llm-node">
-    <Textarea
-      v-model="localPrompt"
-      placeholder="Enter prompt..."
-      rows="3"
-      class="node-input"
-      disabled
-      @update:modelValue="onPromptChange"
-    />
-    <InputText
-      v-if="localModel"
-      v-model="localModel"
-      placeholder="Model"
-      class="node-input"
-      disabled
-    />
-    <InputText
-      v-if="localTemperature !== null"
-      :model-value="`Temperature: ${localTemperature}`"
-      class="node-input"
-      disabled
-    />
-  </BaseNode>
+  <BaseNodeEdit
+    :visible="visible"
+    title="Edit LLM Call"
+    :step="step"
+    @update:visible="$emit('update:visible', $event)"
+    @save="handleBaseSave"
+    @cancel="$emit('cancel')"
+    @delete="$emit('delete')"
+  >
+    <div class="field">
+      <label for="prompt">Prompt</label>
+      <Textarea
+        id="prompt"
+        v-model="editForm.prompt"
+        placeholder="Enter your LLM prompt here..."
+        rows="6"
+        class="w-full"
+      />
+    </div>
+
+    <div class="field">
+      <label for="model">Model (Optional)</label>
+      <InputText
+        id="model"
+        v-model="editForm.model"
+        placeholder="gpt-4, claude-3, etc."
+        class="w-full"
+      />
+    </div>
+
+    <div class="field">
+      <label for="temperature">Temperature (Optional)</label>
+      <InputNumber
+        id="temperature"
+        v-model="editForm.temperature"
+        placeholder="0.0 - 1.0"
+        :min="0"
+        :max="1"
+        :step="0.1"
+        class="w-full"
+      />
+    </div>
+  </BaseNodeEdit>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useFlowStore } from '@/stores/useFlowStore'
-import Textarea from 'primevue/textarea'
+import BaseNodeEdit from './BaseNode.vue'
 import InputText from 'primevue/inputtext'
-import BaseNode from './BaseNode.vue'
+import InputNumber from 'primevue/inputnumber'
+import Textarea from 'primevue/textarea'
 import type { Step } from '@/types'
+import { StepType, type LlmNodeConfig } from '@/types/Step'
 
 interface Props {
-  nodeData: {
-    step: Step
-    config: any
-  }
-  nodeId: string
+  visible: boolean
+  step: Step | null
 }
 
 const props = defineProps<Props>()
-const flowStore = useFlowStore()
 
-const localPrompt = ref(props.nodeData.config?.prompt || '')
-const localModel = ref(props.nodeData.config?.model || '')
-const localTemperature = ref(props.nodeData.config?.temperature || null)
+const emit = defineEmits<{
+  'update:visible': [value: boolean]
+  save: [data: any]
+  cancel: []
+  delete: []
+}>()
 
-// Watch for external changes to the step
+const editForm = ref({
+  type: StepType.LLM_CALL,
+  prompt: '',
+  model: '',
+  temperature: null as number | null,
+})
+
+// Watch for step changes to update form
 watch(
-  () => props.nodeData.config,
-  (newConfig) => {
-    if (newConfig) {
-      localPrompt.value = newConfig.prompt || ''
-      localModel.value = newConfig.model || ''
-      localTemperature.value = newConfig.temperature || null
+  () => props.step,
+  (newStep) => {
+    if (newStep) {
+      const config = newStep.config as LlmNodeConfig
+      editForm.value = {
+        type: newStep.type,
+        prompt: config.prompt || '',
+        model: config.model || '',
+        temperature: config.temperature || null,
+      }
     }
   },
-  { deep: true },
+  { immediate: true },
 )
 
-const onPromptChange = (newPrompt: string | undefined) => {
-  // Just update local state, don't save to backend
-  // The dialog will handle saving when user clicks "Save"
+const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
+  const config: any = {
+    prompt: editForm.value.prompt,
+  }
+
+  // Only include optional fields if they have values
+  if (editForm.value.model) {
+    config.model = editForm.value.model
+  }
+
+  if (editForm.value.temperature !== null) {
+    config.temperature = editForm.value.temperature
+  }
+
+  emit('save', {
+    type: editForm.value.type,
+    config,
+    is_start: commonData.is_start,
+    variables: commonData.variables,
+  })
 }
 </script>
 
 <style scoped>
-/* Additional LLM-specific styling can go here if needed */
-.node-input {
-  resize: none;
+.w-full {
+  width: 100%;
 }
 </style>

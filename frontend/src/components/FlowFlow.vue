@@ -14,11 +14,11 @@
       <Controls />
 
       <template #node-api_call="{ data, id }">
-        <ApiNode :node-data="data" :node-id="id" />
+        <ApiNodeFlow :node-data="data" :node-id="id" />
       </template>
 
       <template #node-llm_call="{ data, id }">
-        <LlmNode :node-data="data" :node-id="id" />
+        <LlmNodeFlow :node-data="data" :node-id="id" />
       </template>
     </VueFlow>
 
@@ -41,10 +41,10 @@ import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { useFlowStore } from '@/stores/useFlowStore'
 import type { Step, StepUpdate, StepConnectionCreate } from '@/types'
+import ApiNodeFlow from './nodes/ApiNodeFlow.vue'
+import LlmNodeFlow from './nodes/LlmNodeFlow.vue'
 import ApiNode from './nodes/ApiNode.vue'
 import LlmNode from './nodes/LlmNode.vue'
-import ApiNodeEdit from './nodes/ApiNodeEdit.vue'
-import LlmNodeEdit from './nodes/LlmNodeEdit.vue'
 
 const flowStore = useFlowStore()
 
@@ -57,8 +57,8 @@ const pendingPositionUpdates = new Map<string, { x: number; y: number }>()
 
 // Component mapping for edit dialogs
 const editComponentMap = {
-  api_call: ApiNodeEdit,
-  llm_call: LlmNodeEdit,
+  api_call: ApiNode,
+  llm_call: LlmNode,
 }
 
 // Computed property to determine which edit component to show
