@@ -21,10 +21,6 @@
         @update:modelValue="onFlowChange"
       />
     </div>
-
-    <div class="flow-header-right">
-      <Button icon="pi pi-cog" severity="secondary" text @click="showSettings" />
-    </div>
   </div>
 </template>
 
@@ -33,7 +29,6 @@ import { ref, watch, computed } from 'vue'
 import { useFlowStore } from '@/stores/useFlowStore'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import Button from 'primevue/button'
 
 const flowStore = useFlowStore()
 
@@ -95,11 +90,6 @@ const onFlowChange = async (flowId: string) => {
     await flowStore.loadFlow(flowId)
   }
 }
-
-const showSettings = () => {
-  // TODO: Implement settings dialog
-  console.log('Settings clicked')
-}
 </script>
 
 <style scoped>
@@ -112,8 +102,7 @@ const showSettings = () => {
 }
 
 .flow-header-left,
-.flow-header-center,
-.flow-header-right {
+.flow-header-center {
   display: flex;
   align-items: center;
 }
@@ -125,11 +114,6 @@ const showSettings = () => {
 .flow-header-center {
   flex: 1;
   justify-content: center;
-}
-
-.flow-header-right {
-  flex: 1;
-  justify-content: flex-end;
 }
 
 .flow-name-input {

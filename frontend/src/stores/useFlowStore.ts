@@ -16,6 +16,8 @@ const API_BASE = 'http://localhost:8000'
 
 export const useFlowStore = defineStore('flow', () => {
   // State
+  const currentPage = ref<string>('editor')
+
   const steps = ref<Step[]>([])
   const stepConnections = ref<StepConnection[]>([])
   const flows = ref<Flow[]>([])
@@ -220,6 +222,10 @@ export const useFlowStore = defineStore('flow', () => {
     }
   }
 
+  const setCurrentPage = (page: string): void => {
+    currentPage.value = page
+  }
+
   const setSelectedStep = (step: Step | null): void => {
     selectedStep.value = step
   }
@@ -234,6 +240,7 @@ export const useFlowStore = defineStore('flow', () => {
 
   return {
     // State
+    currentPage,
     steps,
     stepConnections,
     flows,
@@ -256,6 +263,7 @@ export const useFlowStore = defineStore('flow', () => {
     removeStep,
     addStepConnection,
     removeStepConnection,
+    setCurrentPage,
     setSelectedStep,
     markDirty,
     clearError,

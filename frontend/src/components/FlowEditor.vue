@@ -2,8 +2,8 @@
   <div class="flow-editor">
     <FlowHeader />
     <div class="flow-content">
-      <FlowFlow />
       <FlowSidebar />
+      <FlowFlow />
     </div>
   </div>
 </template>
