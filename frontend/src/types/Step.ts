@@ -8,6 +8,7 @@ export enum StepType {
 export interface Step {
   id: string
   flow_id: string
+  name: string
   type: StepType
   config: StepConfig | null
   pos_x: number

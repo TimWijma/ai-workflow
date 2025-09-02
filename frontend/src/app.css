@@ -4,3 +4,14 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 600;
+  color: var(--p-text-color);
+}

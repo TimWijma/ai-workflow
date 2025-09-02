@@ -2,13 +2,14 @@
   <Dialog
     :visible="visible"
     modal
-    :header="title"
-    :style="{ width: '500px' }"
+    :style="{ width: '90%', height: '90%' }"
     @update:visible="$emit('update:visible', $event)"
+    pt:content:style="flex: 1;"
   >
     <template #header>
       <div class="edit-header">
-        <span class="edit-title">{{ title }}</span>
+        <!-- <span class="edit-title">{{ title }}</span> -->
+        <InputText v-model="commonFields.name" class="edit-title" />
         <div>
           <span class="edit-id">{{ step?.id }}</span>
           <Button
@@ -23,41 +24,65 @@
       </div>
     </template>
 
-    <div class="edit-dialog-content">
-      <!-- Node-specific fields -->
-      <slot />
+    <Tabs value="0">
+      <TabList>
+        <Tab value="0">Settings</Tab>
+        <Tab value="1">Results</Tab>
+      </TabList>
+      <TabPanels style="height: 100%">
+        <TabPanel value="0">
+          <div class="edit-dialog-content">
+            <slot />
 
-      <!-- Common fields section -->
-      <Divider />
-      <h4>Common Settings</h4>
+            <Divider />
+            <h4>Common Settings</h4>
 
-      <div class="field">
-        <label for="isStart">Is Start Step</label>
-        <ToggleSwitch v-model="commonFields.is_start" />
-      </div>
+            <div class="field">
+              <label for="isStart">Is Start Step</label>
+              <ToggleSwitch v-model="commonFields.is_start" />
+            </div>
 
-      <div class="field">
-        <label for="variables">Output Variables</label>
-        <div class="variable-input">
-          <InputText
-            type="text"
-            v-model="tempVariable"
-            placeholder="Enter variable name"
-            @keyup.enter="addVariable"
-          />
-          <Button label="Add" icon="pi pi-plus" @click="addVariable" />
-        </div>
-        <div class="variable-chips" v-if="commonFields.variables.length > 0">
-          <Chip
-            v-for="name in commonFields.variables"
-            :key="name"
-            :label="name"
-            removable
-            @remove="removeVariable(name)"
-          />
-        </div>
-      </div>
-    </div>
+            <!-- <div class="field">
+              <label for="variables">Input Variables</label>
+              <InputText
+                type="text"
+                v-model="tempVariable"
+                placeholder="Enter variable name"
+                @keyup.enter="addVariable"
+              />
+              <div class="variable-chips" v-if="commonFields.variables.length > 0">
+                <Chip
+                  v-for="name in commonFields.variables"
+            </div> -->
+
+            <div class="field">
+              <label for="variables">Output Variables</label>
+              <div class="variable-input">
+                <InputText
+                  type="text"
+                  v-model="tempVariable"
+                  placeholder="Enter variable name"
+                  @keyup.enter="addVariable"
+                />
+                <Button label="Add" icon="pi pi-plus" @click="addVariable" />
+              </div>
+              <div class="variable-chips" v-if="commonFields.variables.length > 0">
+                <Chip
+                  v-for="name in commonFields.variables"
+                  :key="name"
+                  :label="name"
+                  removable
+                  @remove="removeVariable(name)"
+                />
+              </div>
+            </div>
+          </div>
+        </TabPanel>
+        <TabPanel value="1">
+          <p>Results configuration coming soon...</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
 
     <template #footer>
       <Button label="Delete" severity="danger" @click="$emit('delete')" />
@@ -75,11 +100,16 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import InputText from 'primevue/inputtext'
 import Chip from 'primevue/chip'
 import Divider from 'primevue/divider'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
+
 import type { Step } from '@/types'
 
 interface Props {
   visible: boolean
-  title: string
   step: Step | null
 }
 
@@ -87,12 +117,13 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  save: [commonData: { is_start: boolean; variables: string[] }]
+  save: [commonData: { name: string; is_start: boolean; variables: string[] }]
   cancel: []
   delete: []
 }>()
 
 const commonFields = ref({
+  name: 'New Step',
   is_start: false,
   variables: [] as string[],
 })
@@ -104,6 +135,7 @@ watch(
   (newStep) => {
     if (newStep) {
       commonFields.value = {
+        name: newStep.name || 'New Step',
         is_start: newStep.is_start || false,
         variables: newStep.variables || [],
       }
@@ -135,6 +167,7 @@ const removeVariable = (name: string) => {
 
 const handleSave = () => {
   emit('save', {
+    name: commonFields.value.name,
     is_start: commonFields.value.is_start,
     variables: commonFields.value.variables,
   })
@@ -158,17 +191,6 @@ const handleSave = () => {
 .edit-id {
   font-size: 0.8rem;
   opacity: 0.7;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.field label {
-  font-weight: 600;
-  color: var(--p-text-color);
 }
 
 .variable-input {

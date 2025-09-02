@@ -1,7 +1,6 @@
 <template>
   <BaseNodeEdit
     :visible="visible"
-    title="Edit API Call"
     :step="step"
     @update:visible="$emit('update:visible', $event)"
     @save="handleBaseSave"
@@ -14,24 +13,17 @@
         id="apiUrl"
         v-model="editForm.apiUrl"
         placeholder="https://api.example.com/endpoint"
-        class="w-full"
       />
     </div>
 
     <div class="field">
       <label for="method">HTTP Method</label>
-      <Select id="method" v-model="editForm.method" :options="httpMethods" class="w-full" />
+      <Select id="method" v-model="editForm.method" :options="httpMethods" />
     </div>
 
     <div class="field">
       <label for="requestBody">Request Body (JSON)</label>
-      <Textarea
-        id="requestBody"
-        v-model="editForm.data"
-        placeholder='{"key": "value"}'
-        rows="4"
-        class="w-full"
-      />
+      <Textarea id="requestBody" v-model="editForm.data" placeholder='{"key": "value"}' rows="4" />
     </div>
   </BaseNodeEdit>
 </template>
@@ -111,9 +103,3 @@ const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) 
   })
 }
 </script>
-
-<style scoped>
-.w-full {
-  width: 100%;
-}
-</style>

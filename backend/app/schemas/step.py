@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any
 from .step_connection import StepConnection
 
 class StepBase(BaseModel):
+    name: str = "New Step"
     type: str
     config: Optional[Dict[str, Any]] = None
     pos_x: float = 0.0

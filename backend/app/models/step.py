@@ -10,6 +10,7 @@ class Step(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     flow_id = Column(UUID(as_uuid=True), ForeignKey("flows.id"), nullable=False)
     type = Column(String, nullable=False)
+    name = Column(String, nullable=False, default="New Step")
     config = Column(JSONB, nullable=True)
     pos_x = Column(Float, default=0.0)
     pos_y = Column(Float, default=0.0)
