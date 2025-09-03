@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useFlowStore } from '@/stores/useFlowStore'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import BaseNode from './BaseNodeFlow.vue'
@@ -30,7 +29,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const flowStore = useFlowStore()
 
 const localApiUrl = ref(props.nodeData.config?.apiUrl || '')
 const localMethod = ref(props.nodeData.config?.method || 'GET')
@@ -38,7 +36,6 @@ const localData = ref(
   props.nodeData.config?.data ? JSON.stringify(props.nodeData.config.data, null, 2) : '',
 )
 
-// Watch for external changes to the step
 watch(
   () => props.nodeData.config,
   (newConfig) => {
@@ -51,7 +48,3 @@ watch(
   { deep: true },
 )
 </script>
-
-<style scoped>
-/* Additional API-specific styling can go here if needed */
-</style>

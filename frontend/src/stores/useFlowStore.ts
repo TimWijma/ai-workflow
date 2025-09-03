@@ -11,6 +11,7 @@ import type {
   StepConnectionCreate,
 } from '@/types'
 import { Fetch } from '@/scripts/fetch'
+import type { StepPosition } from '@/types/Step'
 
 const API_BASE = 'http://localhost:8000'
 
@@ -149,7 +150,6 @@ export const useFlowStore = defineStore('flow', () => {
     try {
       loading.value = true
       error.value = null
-      console.log(stepUpdate)
 
       const data = await Fetch.put<Step>(`${API_BASE}/steps/${stepId}`, stepUpdate)
 
@@ -157,6 +157,27 @@ export const useFlowStore = defineStore('flow', () => {
       if (index !== -1) {
         steps.value[index] = data
       }
+      dirty.value = true
+    } catch (err: any) {
+      error.value = err.message || 'Failed to update step'
+      console.error('Error updating step:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const updateStepPosition = async (stepId: string, stepPosition: StepPosition): Promise<void> => {
+    try {
+      loading.value = true
+      error.value = null
+
+      const data = await Fetch.put<Step>(`${API_BASE}/steps/${stepId}/position`, stepPosition)
+
+      const index = steps.value.findIndex((s) => s.id === stepId)
+      if (index !== -1) {
+        steps.value[index] = data
+      }
+
       dirty.value = true
     } catch (err: any) {
       error.value = err.message || 'Failed to update step'
@@ -260,6 +281,7 @@ export const useFlowStore = defineStore('flow', () => {
     runFlow,
     addStep,
     updateStep,
+    updateStepPosition,
     removeStep,
     addStepConnection,
     removeStepConnection,

@@ -18,7 +18,11 @@ class StepBase(BaseModel):
 class StepCreate(StepBase):
     flow_id: uuid.UUID
 
-class StepUpdate(StepBase):
+class StepUpdate(BaseModel):
+    pos_x: float
+    pos_y: float
+
+class StepPosition(StepBase):
     pass
 
 class StepInDBBase(StepBase):

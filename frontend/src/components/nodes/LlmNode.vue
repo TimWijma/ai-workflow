@@ -12,7 +12,7 @@
       <label for="prompt">Prompt</label>
       <Textarea
         id="prompt"
-        v-model="editForm.prompt"
+        v-model="editForm.config.prompt"
         placeholder="Enter your LLM prompt here..."
         rows="6"
         class="w-full"
@@ -23,7 +23,7 @@
       <label for="model">Model (Optional)</label>
       <InputText
         id="model"
-        v-model="editForm.model"
+        v-model="editForm.config.model"
         placeholder="gpt-4, claude-3, etc."
         class="w-full"
       />
@@ -33,7 +33,7 @@
       <label for="temperature">Temperature (Optional)</label>
       <InputNumber
         id="temperature"
-        v-model="editForm.temperature"
+        v-model="editForm.config.temperature"
         placeholder="0.0 - 1.0"
         :min="0"
         :max="1"
@@ -69,22 +69,21 @@ const emit = defineEmits<{
 
 const editForm = ref({
   type: StepType.LLM_CALL,
-  prompt: '',
-  model: '',
-  temperature: null as number | null,
+  config: {
+    prompt: '',
+    model: '',
+    temperature: undefined,
+  } as LlmNodeConfig,
 })
 
-// Watch for step changes to update form
 watch(
   () => props.step,
   (newStep) => {
     if (newStep) {
-      const config = newStep.config as LlmNodeConfig
+      const newConfig = newStep.config as LlmNodeConfig
       editForm.value = {
         type: newStep.type,
-        prompt: config.prompt || '',
-        model: config.model || '',
-        temperature: config.temperature || null,
+        config: newConfig,
       }
     }
   },
@@ -92,22 +91,9 @@ watch(
 )
 
 const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
-  const config: any = {
-    prompt: editForm.value.prompt,
-  }
-
-  // Only include optional fields if they have values
-  if (editForm.value.model) {
-    config.model = editForm.value.model
-  }
-
-  if (editForm.value.temperature !== null) {
-    config.temperature = editForm.value.temperature
-  }
-
   emit('save', {
     type: editForm.value.type,
-    config,
+    config: editForm.value.config,
     is_start: commonData.is_start,
     variables: commonData.variables,
   })

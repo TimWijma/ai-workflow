@@ -12,66 +12,71 @@
       />
     </div>
 
-    <Accordion :activeIndex="0" class="sidebar-accordion">
-      <AccordionTab header="Steps">
-        <div class="step-palette">
-          <div
-            class="palette-item api-item"
-            draggable="true"
-            @dragstart="startDrag($event, StepType.API_CALL)"
-            @click="addStep(StepType.API_CALL)"
-          >
-            <i class="pi pi-globe"></i>
-            <span>API Call</span>
-          </div>
+    <Accordion :value="['0']" multiple>
+      <AccordionPanel value="0">
+        <AccordionHeader>Steps</AccordionHeader>
+        <AccordionContent>
+          <div class="step-palette">
+            <div
+              class="palette-item api-item"
+              draggable="true"
+              @dragstart="startDrag($event, StepType.API_CALL)"
+              @click="addStep(StepType.API_CALL)"
+            >
+              <i class="pi pi-globe"></i>
+              <span>API Call</span>
+            </div>
 
-          <div
-            class="palette-item llm-item"
-            draggable="true"
-            @dragstart="startDrag($event, StepType.LLM_CALL)"
-            @click="addStep(StepType.LLM_CALL)"
-          >
-            <i class="pi pi-brain"></i>
-            <span>LLM Call</span>
+            <div
+              class="palette-item llm-item"
+              draggable="true"
+              @dragstart="startDrag($event, StepType.LLM_CALL)"
+              @click="addStep(StepType.LLM_CALL)"
+            >
+              <i class="pi pi-brain"></i>
+              <span>LLM Call</span>
+            </div>
           </div>
-        </div>
-      </AccordionTab>
-
-      <AccordionTab header="Flow Info">
-        <Button
-          icon="pi pi-play"
-          label="Run Flow"
-          :loading="flowStore.loading"
-          :disabled="flowStore.dirty"
-          @click="runFlow"
-          class="save-button"
-        />
-        <div class="flow-info">
-          <div class="info-item">
-            <label>Flow ID:</label>
-            <span>{{ flowStore.flowId || 'None' }}</span>
+        </AccordionContent>
+      </AccordionPanel>
+      <AccordionPanel value="1">
+        <AccordionHeader>Flow Info</AccordionHeader>
+        <AccordionContent>
+          <Button
+            icon="pi pi-play"
+            label="Run Flow"
+            :loading="flowStore.loading"
+            :disabled="flowStore.dirty"
+            @click="runFlow"
+            class="save-button"
+          />
+          <div class="flow-info">
+            <div class="info-item">
+              <label>Flow ID:</label>
+              <span>{{ flowStore.flowId || 'None' }}</span>
+            </div>
+            <div class="info-item">
+              <label>Steps:</label>
+              <span>{{ flowStore.steps.length }}</span>
+            </div>
+            <div class="info-item">
+              <label>Connections:</label>
+              <span>{{ flowStore.stepConnections.length }}</span>
+            </div>
+            <div class="info-item">
+              <label>Status:</label>
+              <Tag
+                :value="flowStore.dirty ? 'Modified' : 'Saved'"
+                :severity="flowStore.dirty ? 'warning' : 'success'"
+              />
+            </div>
+            <div class="info-result">
+              <label>Result:</label>
+              <span>{{ flowStore.flowResult }}</span>
+            </div>
           </div>
-          <div class="info-item">
-            <label>Steps:</label>
-            <span>{{ flowStore.steps.length }}</span>
-          </div>
-          <div class="info-item">
-            <label>Connections:</label>
-            <span>{{ flowStore.stepConnections.length }}</span>
-          </div>
-          <div class="info-item">
-            <label>Status:</label>
-            <Tag
-              :value="flowStore.dirty ? 'Modified' : 'Saved'"
-              :severity="flowStore.dirty ? 'warning' : 'success'"
-            />
-          </div>
-          <div class="info-result">
-            <label>Result:</label>
-            <span>{{ flowStore.flowResult }}</span>
-          </div>
-        </div>
-      </AccordionTab>
+        </AccordionContent>
+      </AccordionPanel>
     </Accordion>
 
     <!-- Error Display -->
@@ -91,12 +96,13 @@
 import { useFlowStore } from '@/stores/useFlowStore'
 import type { StepCreate } from '@/types'
 import Accordion from 'primevue/accordion'
-import AccordionTab from 'primevue/accordiontab'
+import AccordionHeader from 'primevue/accordionheader'
+import AccordionContent from 'primevue/accordioncontent'
+import AccordionPanel from 'primevue/accordionpanel'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import Message from 'primevue/message'
 import { StepType } from '@/types/Step'
-import { computed } from 'vue'
 
 const flowStore = useFlowStore()
 

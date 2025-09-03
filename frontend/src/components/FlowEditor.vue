@@ -18,10 +18,8 @@ import FlowSidebar from './FlowSidebar.vue'
 const flowStore = useFlowStore()
 
 onMounted(async () => {
-  // Load available flows on component mount
   await flowStore.loadFlows()
 
-  // If there are flows, load the first one
   if (flowStore.flows.length > 0) {
     await flowStore.loadFlow(flowStore.flows[0].id)
   }

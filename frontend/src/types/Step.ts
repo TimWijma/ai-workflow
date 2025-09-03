@@ -39,6 +39,11 @@ export interface StepUpdate {
   variables?: string[]
 }
 
+export interface StepPosition {
+  pos_x: number
+  pos_y: number
+}
+
 export type StepConfig = ApiNodeConfig | LlmNodeConfig
 
 export interface ApiNodeConfig {

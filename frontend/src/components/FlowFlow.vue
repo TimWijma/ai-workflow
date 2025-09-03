@@ -45,29 +45,25 @@ import ApiNodeFlow from './nodes/ApiNodeFlow.vue'
 import LlmNodeFlow from './nodes/LlmNodeFlow.vue'
 import ApiNode from './nodes/ApiNode.vue'
 import LlmNode from './nodes/LlmNode.vue'
+import { StepType, type StepPosition } from '@/types/Step'
 
 const flowStore = useFlowStore()
 
-// Dialog state
 const showEditDialog = ref(false)
 
-// Position update debouncing
 let positionUpdateTimer: number | null = null
 const pendingPositionUpdates = new Map<string, { x: number; y: number }>()
 
-// Component mapping for edit dialogs
 const editComponentMap = {
-  api_call: ApiNode,
-  llm_call: LlmNode,
+  [StepType.API_CALL]: ApiNode,
+  [StepType.LLM_CALL]: LlmNode,
 }
 
-// Computed property to determine which edit component to show
 const currentEditComponent = computed(() => {
   if (!flowStore.selectedStep) return null
   return editComponentMap[flowStore.selectedStep.type] || null
 })
 
-// Convert steps to Vue Flow nodes
 const vueFlowNodes = computed(() => {
   return flowStore.steps.map((step) => ({
     id: step.id,
@@ -80,7 +76,6 @@ const vueFlowNodes = computed(() => {
   }))
 })
 
-// Convert step connections to Vue Flow edges
 const vueFlowEdges = computed(() => {
   return flowStore.stepConnections.map((connection) => ({
     id: connection.id,
@@ -89,17 +84,14 @@ const vueFlowEdges = computed(() => {
   }))
 })
 
-// Handle node position changes with debouncing
 const onNodesChange = (changes: any[]) => {
   for (const change of changes) {
     if (change.type === 'position' && change.position && change.id) {
-      // Store the position update in pending updates
       pendingPositionUpdates.set(change.id, {
         x: change.position.x,
         y: change.position.y,
       })
 
-      // Clear existing timer and set a new one
       if (positionUpdateTimer) {
         clearTimeout(positionUpdateTimer)
       }
@@ -112,27 +104,22 @@ const onNodesChange = (changes: any[]) => {
         for (const [stepId, position] of updates) {
           const step = flowStore.steps.find((s) => s.id === stepId)
           if (step) {
-            // Send complete step data, not just position
-            const updateData: StepUpdate = {
-              type: step.type,
-              config: step.config,
+            const updateData: StepPosition = {
               pos_x: position.x,
               pos_y: position.y,
-              is_start: step.is_start,
             }
             try {
-              await flowStore.updateStep(stepId, updateData)
+              await flowStore.updateStepPosition(stepId, updateData)
             } catch (error) {
               console.error('Error updating step position:', error)
             }
           }
         }
-      }, 500) // 500ms debounce
+      }, 500)
     }
   }
 }
 
-// Handle edge changes
 const onEdgesChange = async (changes: any[]) => {
   for (const change of changes) {
     if (change.type === 'remove') {
@@ -144,7 +131,6 @@ const onEdgesChange = async (changes: any[]) => {
   }
 }
 
-// Handle new connections
 const onConnect = async (connection: any) => {
   const connectionData: StepConnectionCreate = {
     from_step_id: connection.source,
@@ -153,7 +139,6 @@ const onConnect = async (connection: any) => {
   await flowStore.addStepConnection(connectionData)
 }
 
-// Handle node clicks
 const onNodeClick = (event: any) => {
   const step = flowStore.steps.find((s) => s.id === event.node.id)
   if (step) {
@@ -162,7 +147,6 @@ const onNodeClick = (event: any) => {
   }
 }
 
-// Dialog methods
 const openEditDialog = (step: Step) => {
   flowStore.setSelectedStep(step)
   showEditDialog.value = true

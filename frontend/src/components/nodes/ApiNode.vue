@@ -11,19 +11,24 @@
       <label for="apiUrl">API URL</label>
       <InputText
         id="apiUrl"
-        v-model="editForm.apiUrl"
+        v-model="editForm.config.apiUrl"
         placeholder="https://api.example.com/endpoint"
       />
     </div>
 
     <div class="field">
       <label for="method">HTTP Method</label>
-      <Select id="method" v-model="editForm.method" :options="httpMethods" />
+      <Select id="method" v-model="editForm.config.method" :options="httpMethods" />
     </div>
 
     <div class="field">
       <label for="requestBody">Request Body (JSON)</label>
-      <Textarea id="requestBody" v-model="editForm.data" placeholder='{"key": "value"}' rows="4" />
+      <Textarea
+        id="requestBody"
+        v-model="editForm.config.data"
+        placeholder='{"key": "value"}'
+        rows="4"
+      />
     </div>
   </BaseNodeEdit>
 </template>
@@ -53,9 +58,11 @@ const emit = defineEmits<{
 
 const editForm = ref({
   type: StepType.API_CALL,
-  apiUrl: '',
-  method: 'GET',
-  data: '',
+  config: {
+    apiUrl: '',
+    method: 'GET',
+    data: '',
+  } as ApiNodeConfig,
 })
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE']
@@ -64,12 +71,10 @@ watch(
   () => props.step,
   (newStep) => {
     if (newStep) {
-      const config = newStep.config as ApiNodeConfig
+      const newConfig = newStep.config as ApiNodeConfig
       editForm.value = {
         type: newStep.type,
-        apiUrl: config.apiUrl || '',
-        method: config.method || 'GET',
-        data: config.data ? JSON.stringify(config.data, null, 2) : '',
+        config: newConfig,
       }
     }
   },
@@ -80,9 +85,9 @@ const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) 
   let parsedData = null
 
   // Try to parse JSON data if provided
-  if (editForm.value.data.trim()) {
+  if (editForm.value.config.data?.trim()) {
     try {
-      parsedData = JSON.parse(editForm.value.data)
+      parsedData = JSON.parse(editForm.value.config.data)
     } catch (error) {
       alert('Invalid JSON in Request Body')
       return
@@ -90,8 +95,8 @@ const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) 
   }
 
   const config = {
-    apiUrl: editForm.value.apiUrl,
-    method: editForm.value.method,
+    apiUrl: editForm.value.config.apiUrl,
+    method: editForm.value.config.method,
     data: parsedData,
   }
 
