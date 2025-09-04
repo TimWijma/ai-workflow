@@ -26,12 +26,6 @@ def update_step(step_id: uuid.UUID, step: step_schema.StepUpdate, db: Session = 
         raise HTTPException(status_code=404, detail="Step not found")
     return db_step
 
-@router.put("/steps/{step_id}/position", response_model=step_schema.Step)
-def update_step_position(step_id: uuid.UUID, step_position: step_schema.StepPosition, db: Session = Depends(get_db)):
-    db_step = crud_step.update_step_position(db, step_id=step_id, step_position=step_position)
-    if db_step is None:
-        raise HTTPException(status_code=404, detail="Step not found")
-    return db_step
 
 @router.delete("/steps/{step_id}", response_model=step_schema.Step)
 def delete_step(step_id: uuid.UUID, db: Session = Depends(get_db)):

@@ -31,17 +31,13 @@ export interface StepCreate {
 }
 
 export interface StepUpdate {
+  name: string
   type?: StepType
   config?: StepConfig | null
   pos_x?: number
   pos_y?: number
   is_start?: boolean
   variables?: string[]
-}
-
-export interface StepPosition {
-  pos_x: number
-  pos_y: number
 }
 
 export type StepConfig = ApiNodeConfig | LlmNodeConfig

@@ -1,5 +1,5 @@
 <template>
-  <BaseNodeEdit
+  <BaseNode
     :visible="visible"
     title="Edit LLM Call"
     :step="step"
@@ -41,12 +41,12 @@
         class="w-full"
       />
     </div>
-  </BaseNodeEdit>
+  </BaseNode>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import BaseNodeEdit from './BaseNode.vue'
+import BaseNode from './BaseNode.vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
@@ -90,8 +90,9 @@ watch(
   { immediate: true },
 )
 
-const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
+const handleBaseSave = (commonData: { name: string; is_start: boolean; variables: string[] }) => {
   emit('save', {
+    name: commonData.name,
     type: editForm.value.type,
     config: editForm.value.config,
     is_start: commonData.is_start,

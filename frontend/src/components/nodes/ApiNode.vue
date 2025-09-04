@@ -1,5 +1,5 @@
 <template>
-  <BaseNodeEdit
+  <BaseNode
     :visible="visible"
     :step="step"
     @update:visible="$emit('update:visible', $event)"
@@ -30,12 +30,12 @@
         rows="4"
       />
     </div>
-  </BaseNodeEdit>
+  </BaseNode>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import BaseNodeEdit from './BaseNode.vue'
+import BaseNode from './BaseNode.vue'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import Select from 'primevue/select'
@@ -81,7 +81,7 @@ watch(
   { immediate: true },
 )
 
-const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) => {
+const handleBaseSave = (commonData: { name: string; is_start: boolean; variables: string[] }) => {
   let parsedData = null
 
   // Try to parse JSON data if provided
@@ -101,6 +101,7 @@ const handleBaseSave = (commonData: { is_start: boolean; variables: string[] }) 
   }
 
   emit('save', {
+    name: commonData.name,
     type: editForm.value.type,
     config,
     is_start: commonData.is_start,

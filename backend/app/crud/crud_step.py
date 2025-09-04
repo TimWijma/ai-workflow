@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 import uuid
 
 from ..models.step import Step
-from ..schemas.step import StepCreate, StepUpdate, StepPosition
+from ..schemas.step import StepCreate, StepUpdate
 
 
 def get_step(db: Session, step_id: uuid.UUID):
@@ -27,15 +27,6 @@ def update_step(db: Session, step_id: uuid.UUID, step: StepUpdate):
         db.refresh(db_step)
     return db_step
 
-def update_step_position(db: Session, step_id: uuid.UUID, step_position: StepPosition):
-    db_step = get_step(db, step_id)
-    if db_step:
-        db_step.pos_x = step_position.pos_x
-        db_step.pos_y = step_position.pos_y
-
-        db.commit()
-        db.refresh(db_step)
-    return db_step
 
 def delete_step(db: Session, step_id: uuid.UUID):
     db_step = get_step(db, step_id)

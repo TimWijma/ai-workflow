@@ -45,7 +45,7 @@ import ApiNodeFlow from './nodes/ApiNodeFlow.vue'
 import LlmNodeFlow from './nodes/LlmNodeFlow.vue'
 import ApiNode from './nodes/ApiNode.vue'
 import LlmNode from './nodes/LlmNode.vue'
-import { StepType, type StepPosition } from '@/types/Step'
+import { StepType } from '@/types/Step'
 
 const flowStore = useFlowStore()
 
@@ -104,12 +104,13 @@ const onNodesChange = (changes: any[]) => {
         for (const [stepId, position] of updates) {
           const step = flowStore.steps.find((s) => s.id === stepId)
           if (step) {
-            const updateData: StepPosition = {
+            const updateData = {
+              ...step,
               pos_x: position.x,
               pos_y: position.y,
             }
             try {
-              await flowStore.updateStepPosition(stepId, updateData)
+              await flowStore.updateStep(stepId, updateData)
             } catch (error) {
               console.error('Error updating step position:', error)
             }
@@ -161,6 +162,7 @@ const saveEditedStep = async (data: any) => {
   if (!flowStore.selectedStep) return
 
   const updateData: StepUpdate = {
+    name: data.name,
     type: data.type,
     config: data.config,
     pos_x: flowStore.selectedStep.pos_x,
